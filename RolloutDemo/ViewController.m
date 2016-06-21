@@ -14,13 +14,16 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
+@property (nonatomic, strong) NSString *text;
+
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+ 
+    _text = @"hello world";
 }
 
 - (NSString *)quote:(NSString *)s{
@@ -88,6 +91,30 @@
 
 - (IBAction)uploadData{
     NSLog(@"上传日志");
+    
+    
+    
+    NSData *jsonData = [TestModel getTestData];
+    NSString *string = @"http://10.0.5.70:9051/fa";
+    NSURL *url = [NSURL URLWithString:string];
+    NSMutableURLRequest *rq = [NSMutableURLRequest requestWithURL:url];
+    [rq setHTTPMethod:@"POST"];
+    [rq setHTTPBody:jsonData];
+    [rq setAllHTTPHeaderFields:nil];
+    [rq setValue:@"" forHTTPHeaderField:@""];
+    
+    NSString *sss = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//    NSLog(@"sss : %@", sss);
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *sessionDataTask = [session dataTaskWithRequest:rq
+                                                       completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                                                           NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                                           NSLog(@"%@", string);
+                                                           NSLog(@"网络请求反馈成功");
+                                                       }];
+    [sessionDataTask resume];
+    
 }
 
 
